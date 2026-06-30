@@ -5,47 +5,93 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Premium Shop</title>
     <script src="https://telegram.org"></script>
-    <link href="https://jsdelivr.net" rel="stylesheet">
     <style>
-        body { background-color: #131415; color: #ffffff; font-family: system-ui, sans-serif; }
+        /* Чистый, легкий дизайн без внешних тяжелых библиотек */
+        body { 
+            background-color: #131415; 
+            color: #ffffff; 
+            font-family: system-ui, -apple-system, sans-serif; 
+            padding: 16px;
+            margin: 0;
+        }
+        .text-center { text-align: center; }
+        .mb-6 { margin-bottom: 24px; }
+        .text-indigo { color: #818cf8; font-size: 24px; font-weight: bold; }
+        .text-sub { color: #9ca3af; font-size: 12px; margin-top: 4px; }
+        .grid { display: flex; flex-direction: column; gap: 16px; margin-bottom: 100px; }
+        .card { 
+            background-color: #1e2022; 
+            padding: 16px; 
+            border-radius: 16px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border: 1px solid #374151; 
+        }
+        .title { font-size: 14px; font-weight: 600; margin: 0; }
+        .price { color: #818cf8; font-weight: bold; font-size: 14px; display: block; margin-top: 8px; }
+        .btn { 
+            background-color: #4f46e5; 
+            color: white; 
+            border: none; 
+            font-size: 12px; 
+            font-weight: 500; 
+            padding: 8px 16px; 
+            border-radius: 12px; 
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .btn:active { transform: scale(0.95); }
     </style>
 </head>
-<body class="p-4 antialiased">
+<body>
+
     <div class="text-center mb-6">
-        <h1 class="text-2xl font-bold text-indigo-400">✨ Твой Цифровой Магазин</h1>
-        <p class="text-xs text-gray-400 mt-1">Моментальная выдача после оплаты</p>
+        <h1 class="text-indigo">✨ Твой Цифровой Магазин</h1>
+        <p class="text-sub">Моментальная выдача после оплаты</p>
     </div>
-    <div class="grid grid-cols-1 gap-4 mb-24">
-        <div class="bg-gray-800 p-4 rounded-2xl flex justify-between items-center border border-gray-700">
+
+    <div class="grid">
+        <!-- Товар 1 -->
+        <div class="card">
             <div>
-                <h3 class="font-semibold text-sm">Telegram Premium (1 месяц)</h3>
-                <span class="text-indigo-400 font-bold text-sm block mt-2">299 ₽</span>
+                <h3 class="title">Telegram Premium (1 месяц)</h3>
+                <span class="price">299 ₽</span>
             </div>
-            <button onclick="addToCart('Telegram Premium 1 мес', 299)" class="bg-indigo-600 text-xs font-medium py-2 px-4 rounded-xl text-white active:scale-95 transition-transform">В корзину</button>
+            <button onclick="addToCart('Telegram Premium 1 мес', 299)" class="btn">В корзину</button>
         </div>
-        <div class="bg-gray-800 p-4 rounded-2xl flex justify-between items-center border border-gray-700">
+
+        <!-- Товар 2 -->
+        <div class="card">
             <div>
-                <h3 class="font-semibold text-sm">Высокоскоростной VPN (1 год)</h3>
-                <span class="text-indigo-400 font-bold text-sm block mt-2">590 ₽</span>
+                <h3 class="title">Высокоскоростной VPN (1 год)</h3>
+                <span class="price">590 ₽</span>
             </div>
-            <button onclick="addToCart('Скоростной VPN 1 год', 590)" class="bg-indigo-600 text-xs font-medium py-2 px-4 rounded-xl text-white active:scale-95 transition-transform">В корзину</button>
+            <button onclick="addToCart('Скоростной VPN 1 год', 590)" class="btn">В корзину</button>
         </div>
     </div>
+
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
+        
         let cart = { items: [], total_price: 0 };
         const mainButton = tg.MainButton;
+        
         mainButton.setText("Оформить заказ (0 ₽)");
         mainButton.textColor = "#FFFFFF";
         mainButton.color = "#4f46e5";
+
         function addToCart(name, price) {
             cart.items.push(name);
             cart.total_price += price;
             mainButton.setText(`Оформить заказ (${cart.total_price} ₽)`);
             if (!mainButton.isVisible) mainButton.show();
         }
-        mainButton.onClick(function() { tg.sendData(JSON.stringify(cart)); });
+
+        mainButton.onClick(function() {
+            tg.sendData(JSON.stringify(cart));
+        });
     </script>
 </body>
 </html>
