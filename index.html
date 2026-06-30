@@ -160,23 +160,31 @@
             document.getElementById('sheet-overlay').style.display = 'none';
         }
 
-        function selectPayment(method) {
-            closePaymentSheet();
-            let dataToSend = {
-                items: [currentOrder.name],
-                total_price: currentOrder.price,
-                payment_method: method
-            };
-            
-            // Проверка: sendData работает ТОЛЬКО если Mini App открыт через KeyboardButton.
-            // Если приложение открыто через Inline-кнопку или ссылку, используем tg.close().
-            if (tg.sendData) {
-                tg.sendData(JSON.stringify(dataToSend));
-            } else {
-                alert("Заказ оформлен! Метод: " + method);
-                tg.close();
-            }
+    function selectPayment(method) {
+    closePaymentSheet();
+    
+    let dataToSend = {
+        items: [currentOrder.name],
+        total_price: currentOrder.price,
+        payment_method: method
+    };
+
+    // Проверяем, доступен ли метод отправки данных в чат
+    if (tg.sendData) {
+        try {
+            tg.sendData(JSON.stringify(dataToSend));
+        } catch (e) {
+            // Если Telegram заблокировал sendData, используем альтернативу
+            alert("Заказ оформлен! Способ: " + method + ". Проверьте чат с ботом.");
+            tg.close();
         }
+    } else {
+        // Если открыто как обычный сайт или в режиме, где sendData недоступен
+        alert("Заказ оформлен! Способ: " + method);
+        tg.close();
+    }
+}
+
     </script>
 </body>
 </html>
