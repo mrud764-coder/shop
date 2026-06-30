@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Test Marketplace</title>
-    <!-- ИСПРАВЛЕНО: Правильный и полный путь к SDK Telegram -->
+    <!-- Официальный SDK Telegram -->
     <script src="https://telegram.org"></script>
     <style>
         body { 
@@ -32,29 +32,22 @@
     <button class="btn-test" onclick="testLink()" style="background: #10b981;">2. Тест перехода в бот</button>
 
     <script>
-        // Инициализация WebApp контекста
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
 
-        // Функция для первой кнопки
         function testClick() {
-            try {
-                // Используем нативный алерт Telegram вместо браузерного
-                tg.showAlert("Ура! JavaScript внутри Telegram работает идеально!");
-            } catch(e) {
-                alert("Обычный алерт: Работает!");
-            }
+            tg.showAlert("Ура! JavaScript внутри Telegram работает идеально!");
         }
 
-        // Функция для второй кнопки
         function testLink() {
             try {
                 const botUsername = "my_premium_shop_2026_bot";
-                // ИСПРАВЛЕНО: Валидный синтаксис глубокой ссылки Telegram
-                const deepLink = `https://t.me{botUsername}?start=TestItem__100__Card`;
                 
-                // Пробуем открыть ссылку через встроенный метод Telegram SDK
+                // ИСПРАВЛЕНО: Убрали длинные строки и спецсимволы. Передаем супер-компактный код "p299" (Premium, 299р)
+                const deepLink = `https://t.me{botUsername}?start=p299`;
+                
+                // Нативно открываем чат с ботом
                 tg.openTelegramLink(deepLink);
                 tg.close();
             } catch (e) {
