@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Enterprise Marketplace</title>
-    <!-- Официальный SDK Telegram Mini Apps -->
     <script src="https://telegram.org"></script>
     <style>
         :root {
@@ -59,7 +58,6 @@
 
     <div class="brand">CYBER NEXUS</div>
 
-    <!-- ЭКРАН 1: МАГАЗИН -->
     <div class="app-screen active" id="screen-shop">
         <div class="grid">
             <div class="premium-card">
@@ -79,7 +77,6 @@
         </div>
     </div>
 
-    <!-- ЭКРАН 2: ПРОФИЛЬ -->
     <div class="app-screen" id="screen-profile">
         <div class="vip-card">
             <h2 style="margin:0; font-size:18px;" id="user-display">Премиум Клиент</h2>
@@ -88,7 +85,6 @@
         </div>
     </div>
 
-    <!-- ЭКРАН 3: АДМИНКА -->
     <div class="app-screen" id="screen-admin">
         <div class="vip-card" style="background: #064e3b; border-color: #047857;">
             <h3 style="margin:0; font-size:14px; color:#a7f3d0;">ВЫРУЧКА СЕГОДНЯ</h3>
@@ -96,19 +92,17 @@
         </div>
     </div>
 
-    <!-- Навигация -->
     <div class="bottom-nav">
         <button class="nav-btn active" id="btn-shop" onclick="changeScreen('shop')">🛍️ Магазин</button>
         <button class="nav-btn" id="btn-profile" onclick="changeScreen('profile')">👤 Профиль</button>
         <button class="nav-btn" id="btn-admin" onclick="changeScreen('admin')">📊 Админка</button>
     </div>
 
-    <!-- Выезжающее окно способов оплаты -->
     <div class="bottom-sheet-overlay" id="sheet-overlay" onclick="closePaymentSheet()"></div>
     <div class="bottom-sheet" id="payment-sheet">
         <h3 style="font-size: 16px; text-align: center; margin-bottom: 20px;">Выберите способ оплаты</h3>
-        <div class="pay-option" onclick="selectPayment('Stars')">🪙 Тестовая карта (Stars)</div>
-        <div class="pay-option" onclick="selectPayment('CRM')">📲 Моментальный баланс</div>
+        <div class="pay-option" onclick="selectPayment('Card')">💳 Банковская карта</div>
+        <div class="pay-option" onclick="selectPayment('SBP')">📲 СБП (Моментально)</div>
     </div>
 
     <script>
@@ -146,22 +140,45 @@
             document.getElementById('sheet-overlay').style.display = 'none';
         }
 
-        // АБСОЛЮТНО НАДЕЖНЫЙ МЕТОД: Отправка параметров заказа боту через специальную сессию Telegram
         function selectPayment(method) {
-            try {
-                closePaymentSheet();
-                
-                let dataToSend = {
+            closePaymentSheet();
+            
+            // ВНИМАНИЕ: Сюда вы вставите HTTPS-ссылку, которую выдаст утилита Ngrok на следующем шаге!
+            const NGROK_URL = "https://ЗДЕСЬ_БУДЕТ_ВАШ_АДРЕС_NGROK.ngrok-free.app";
+
+            if(NGROK_URL.includes("ЗДЕСЬ_БУДЕТ_ВАШ")) {
+                alert("Ошибка конфигурации: Сначала запустите Ngrok на Vultr и вставьте ссылку сюда!");
+                return;
+            }
+
+            // Нативно показываем системный лоадер Telegram, чтобы пользователь видел загрузку
+            tg.MainButton.setText("Создание платежной сессии...").show();
+
+            fetch(`${NGROK_URL}/api/pay`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    init_data: tg.initData,
                     title: currentOrder.name,
                     price: currentOrder.price,
                     method: method
-                };
-                
-                // Передаем данные корзины нативно обратно боту
-                tg.sendData(JSON.stringify(dataToSend));
-            } catch (error) {
-                alert("Ошибка JS: " + error.message);
-            }
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                tg.MainButton.hide();
+                if (data.payment_url) {
+                    // Открываем внешнюю ссылку оплаты прямо внутри встроенного браузера Telegram
+                    tg.openLink(data.payment_url);
+                } else {
+                    alert("Ошибка создания платежа: " + (data.error || "Неизвестная ошибка"));
+                }
+            })
+            .catch(err => {
+                tg.MainButton.hide();
+                alert("Ошибка сети: Бэкенд на Vultr недоступен или Ngrok выключен.");
+                console.error(err);
+            });
         }
     </script>
 </body>
