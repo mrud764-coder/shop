@@ -107,8 +107,8 @@
     <div class="bottom-sheet-overlay" id="sheet-overlay" onclick="closePaymentSheet()"></div>
     <div class="bottom-sheet" id="payment-sheet">
         <h3 style="font-size: 16px; text-align: center; margin-bottom: 20px;">Выберите способ оплаты</h3>
-        <div class="pay-option" onclick="selectPayment('Тестовая карта')">💳 Тестовая карта (Stars)</div>
-        <div class="pay-option" onclick="selectPayment('СБП')">📲 Моментальный баланс</div>
+        <div class="pay-option" onclick="selectPayment('Stars')">🪙 Тестовая карта (Stars)</div>
+        <div class="pay-option" onclick="selectPayment('CRM')">📲 Моментальный баланс</div>
     </div>
 
     <script>
@@ -120,7 +120,7 @@
             document.getElementById('user-display').innerText = tg.initDataUnsafe.user.first_name;
         }
         
-        let currentOrder = { name: "", price: "" };
+        let currentOrder = { name: "", price: 0 };
 
         function changeScreen(screenId) {
             document.getElementById('screen-shop').classList.remove('active');
@@ -146,24 +146,19 @@
             document.getElementById('sheet-overlay').style.display = 'none';
         }
 
+        // АБСОЛЮТНО НАДЕЖНЫЙ МЕТОД: Отправка параметров заказа боту через специальную сессию Telegram
         function selectPayment(method) {
             try {
                 closePaymentSheet();
                 
-                // Кодируем заказ в безопасный формат: TG_299 или VPN_590
-                let itemCode = "TG";
-                if (String(currentOrder.name).includes("VPN")) {
-                    itemCode = "VPN";
-                }
+                let dataToSend = {
+                    title: currentOrder.name,
+                    price: currentOrder.price,
+                    method: method
+                };
                 
-                const payload = `${itemCode}_${currentOrder.price}`;
-                const botUsername = "my_premium_shop_2026_bot"; 
-                
-                // ИСПРАВЛЕНО: Теперь символы $ и / стоят на своих местах, JS отработает корректно
-                const deepLink = `https://t.me{botUsername}?start=${payload}`;
-                
-                tg.openTelegramLink(deepLink);
-                tg.close();
+                // Передаем данные корзины нативно обратно боту
+                tg.sendData(JSON.stringify(dataToSend));
             } catch (error) {
                 alert("Ошибка JS: " + error.message);
             }
