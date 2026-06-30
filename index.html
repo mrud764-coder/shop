@@ -2,167 +2,246 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Digital Shop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>⚡ Cyber Digital Marketplace</title>
     <script src="https://telegram.org"></script>
     <style>
         :root {
-            --bg-color: #0d0e12;
-            --card-bg: #161820;
-            --accent-color: #6366f1;
-            --accent-hover: #4f46e5;
-            --text-main: #ffffff;
+            --bg-gradient: radial-gradient(circle at 50% 0%, #1a1c29 0%, #0b0c10 100%);
+            --glass-bg: rgba(26, 29, 41, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --accent-glow: drop-shadow(0 0 12px rgba(99, 102, 241, 0.5));
+            --text-main: #f3f4f6;
             --text-muted: #9ca3af;
-            --success: #10b981;
         }
 
         body { 
-            background-color: var(--bg-color); 
+            background: var(--bg-gradient);
             color: var(--text-main); 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-            padding: 16px;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', Roboto, sans-serif; 
+            padding: 20px 16px 140px 16px;
             margin: 0;
             user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* Профиль пользователя вверху */
-        .user-profile {
-            background: linear-gradient(135deg, #1e1b4b 0%, #111827 100%);
-            padding: 16px;
-            border-radius: 20px;
-            margin-bottom: 24px;
-            border: 1px solid #312e81;
+        /* Премиум Баннер Профиля */
+        .premium-profile {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(168, 85, 247, 0.05) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 20px;
+            border-radius: 24px;
+            margin-bottom: 28px;
+            border: 1px solid rgba(99, 102, 241, 0.25);
             display: flex;
             align-items: center;
-            gap: 12px;
+            justify-content: space-between;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
-        .user-avatar {
-            width: 42px;
-            height: 42px;
-            background: var(--accent-color);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
-        }
-        .user-welcome { font-size: 14px; font-weight: 600; margin: 0; }
-        .user-status { font-size: 11px; color: var(--success); margin: 2px 0 0 0; display: flex; align-items: center; gap: 4px; }
-        .status-dot { width: 6px; height: 6px; background: var(--success); border-radius: 50%; display: inline-block; }
-
-        /* Заголовок категорий */
-        .category-title {
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-muted);
-            margin-bottom: 14px;
-            font-weight: 700;
-            padding-left: 4px;
-        }
-
-        /* Сетка товаров */
-        .grid { display: flex; flex-direction: column; gap: 14px; margin-bottom: 120px; }
-        
-        /* Карточка премиум товара */
-        .card { 
-            background-color: var(--card-bg); 
-            padding: 18px; 
-            border-radius: 22px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            border: 1px solid #232736; 
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s, border-color 0.2s;
-        }
-        .card:active { transform: scale(0.99); border-color: var(--accent-color); }
-        
-        .item-info { display: flex; align-items: center; gap: 14px; }
-        .item-icon {
-            font-size: 26px;
-            background: #1f2231;
-            width: 52px;
-            height: 52px;
+        .profile-meta { display: flex; align-items: center; gap: 14px; }
+        .avatar-glow {
+            width: 46px;
+            height: 46px;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
             border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid #2e3349;
+            font-size: 22px;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+        }
+        .welcome-text { font-size: 16px; font-weight: 700; margin: 0; letter-spacing: -0.3px; }
+        .status-badge { 
+            font-size: 11px; 
+            color: #10b981; 
+            margin-top: 4px; 
+            display: flex; 
+            align-items: center; 
+            gap: 5px; 
+            font-weight: 600;
+        }
+        .pulse-dot { 
+            width: 6px; 
+            height: 6px; 
+            background: #10b981; 
+            border-radius: 50%; 
+            animation: pulse 2s infinite;
+        }
+        .balance-pill {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 6px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            text-align: right;
+        }
+        .balance-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
+        .balance-value { font-size: 13px; font-weight: 700; color: #facc15; margin-top: 2px; }
+
+        /* Переключатель категорий (Табы) */
+        .tabs-container {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .tab-item {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 10px 18px;
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+        .tab-item.active {
+            background: #6366f1;
+            color: white;
+            border-color: #6366f1;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
+        }
+
+        /* Сетка премиум карточек */
+        .cards-feed { display: flex; flex-direction: column; gap: 16px; }
+        
+        .premium-card { 
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 20px; 
+            border-radius: 26px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border: 1px solid var(--glass-border); 
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .premium-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.02), transparent);
+            transform: translateX(-100%);
+            transition: 0.5s;
+        }
+        .premium-card:active::before { transform: translateX(100%); }
+        .premium-card:active { transform: scale(0.98); border-color: rgba(99, 102, 241, 0.4); }
+        
+        .meta-layer { display: flex; align-items: center; gap: 16px; }
+        .neon-icon {
+            font-size: 28px;
+            background: linear-gradient(135deg, #1e2235 0%, #141622 100%);
+            width: 56px;
+            height: 56px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
         
-        .title { font-size: 15px; font-weight: 600; margin: 0; letter-spacing: -0.2px; }
-        .badge { background: rgba(16, 185, 129, 0.1); color: var(--success); font-size: 10px; padding: 2px 6px; border-radius: 6px; font-weight: 600; display: inline-block; margin-top: 4px; }
-        .price { color: #ffffff; font-weight: 800; font-size: 16px; display: block; margin-top: 6px; }
+        .item-title { font-size: 16px; font-weight: 700; margin: 0; letter-spacing: -0.2px; }
+        .stock-tag { 
+            color: #10b981; 
+            font-size: 11px; 
+            font-weight: 600; 
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 4px;
+        }
+        .tag-dot { width: 4px; height: 4px; background: #10b981; border-radius: 50%; }
+        .price-tag { color: #ffffff; font-weight: 800; font-size: 18px; display: block; margin-top: 8px; }
         
-        /* Кнопка купить */
-        .btn { 
-            background: linear-gradient(135deg, var(--accent-color) 0%, #4f46e5 100%);
+        /* Кнопка "Купить" нового поколения */
+        .action-button { 
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
             color: white; 
             border: none; 
             font-size: 13px; 
-            font-weight: 600; 
-            padding: 10px 20px; 
-            border-radius: 14px; 
+            font-weight: 700; 
+            padding: 12px 24px; 
+            border-radius: 16px; 
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
-            transition: all 0.1s ease;
+            filter: var(--accent-glow);
+            transition: all 0.2s ease;
         }
-        .btn:active { transform: scale(0.93); box-shadow: none; }
+        .action-button:active { transform: scale(0.92); filter: none; }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 8px #10b981; }
+            100% { transform: scale(0.95); opacity: 0.5; }
+        }
     </style>
 </head>
 <body>
 
-    <!-- Блок профиля клиента -->
-    <div class="user-profile">
-        <div class="user-avatar">👤</div>
-        <div>
-            <h2 class="user-welcome" id="username">Премиум Клиент</h2>
-            <p class="user-status"><span class="status-dot"></span> Дисконтная программа активна</p>
+    <!-- Премиальный блок клиента -->
+    <div class="premium-profile">
+        <div class="profile-meta">
+            <div class="avatar-glow">👑</div>
+            <div>
+                <h2 class="welcome-text" id="user-display">Премиум Клиент</h2>
+                <p class="status-badge"><span class="pulse-dot"></span> VIP статус активен</p>
+            </div>
+        </div>
+        <div class="balance-pill">
+            <div class="balance-label">Кэшбэк</div>
+            <div class="balance-value">7%</div>
         </div>
     </div>
 
-    <h2 class="category-title">🔥 Популярные товары</h2>
+    <!-- Горизонтальные Категории -->
+    <div class="tabs-container">
+        <div class="tab-item active">🔥 Популярное</div>
+        <div class="tab-item">🛡️ VPN Сервисы</div>
+        <div class="tab-item">🤖 ИИ Аккаунты</div>
+    </div>
 
-    <div class="grid">
+    <div class="cards-feed">
         <!-- Товар 1 -->
-        <div class="card">
-            <div class="item-info">
-                <div class="item-icon">⭐</div>
+        <div class="premium-card">
+            <div class="meta-layer">
+                <div class="neon-icon">⭐</div>
                 <div>
-                    <h3 class="title">Telegram Premium (1 месяц)</h3>
-                    <span class="badge">⚡ В наличии</span>
-                    <span class="price">299 ₽</span>
+                    <h3 class="item-title">Telegram Premium (1 мес)</h3>
+                    <span class="stock-tag"><span class="tag-dot"></span> Автовыдача</span>
+                    <span class="price-tag">299 ₽</span>
                 </div>
             </div>
-            <button onclick="addToCart('Telegram Premium 1 мес', 299)" class="btn">Купить</button>
+            <button onclick="addToCart('Telegram Premium 1 мес', 299)" class="action-button">Купить</button>
         </div>
 
         <!-- Товар 2 -->
-        <div class="card">
-            <div class="item-info">
-                <div class="item-icon">🛡️</div>
+        <div class="premium-card">
+            <div class="meta-layer">
+                <div class="neon-icon">⚡</div>
                 <div>
-                    <h3 class="title">Высокоскоростной VPN (1 год)</h3>
-                    <span class="badge">⚡ В наличии</span>
-                    <span class="price">590 ₽</span>
+                    <h3 class="item-title">Высокоскоростной VPN (1 год)</h3>
+                    <span class="stock-tag"><span class="tag-dot"></span> Автовыдача</span>
+                    <span class="price-tag">590 ₽</span>
                 </div>
             </div>
-            <button onclick="addToCart('Скоростной VPN 1 год', 590)" class="btn">Купить</button>
+            <button onclick="addToCart('Скоростной VPN 1 год', 590)" class="action-button">Купить</button>
         </div>
         
-        <!-- Товар 3 (Для веса и красоты) -->
-        <div class="card">
-            <div class="item-info">
-                <div class="item-icon">🤖</div>
+        <!-- Товар 3 -->
+        <div class="premium-card">
+            <div class="meta-layer">
+                <div class="neon-icon">🧠</div>
                 <div>
-                    <h3 class="title">ChatGPT Plus (Аккаунт)</h3>
-                    <span class="badge">⚡ В наличии</span>
-                    <span class="price">1 490 ₽</span>
+                    <h3 class="item-title">ChatGPT Plus (Аккаунт)</h3>
+                    <span class="stock-tag"><span class="tag-dot"></span> 3 шт. в наличии</span>
+                    <span class="price-tag">1 490 ₽</span>
                 </div>
             </div>
-            <button onclick="addToCart('ChatGPT Plus Аккаунт', 1490)" class="btn">Купить</button>
+            <button onclick="addToCart('ChatGPT Plus Аккаунт', 1490)" class="action-button">Купить</button>
         </div>
     </div>
 
@@ -170,9 +249,9 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
         
-        // Автоматически подставляем имя пользователя из Telegram в шапку витрины
+        // Интеграция с данными Telegram
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            document.getElementById('username').innerText = tg.initDataUnsafe.user.first_name;
+            document.getElementById('user-display').innerText = tg.initDataUnsafe.user.first_name;
         }
         
         let cart = { items: [], total_price: 0 };
@@ -180,18 +259,9 @@
         
         mainButton.setText("Оформить заказ (0 ₽)");
         mainButton.textColor = "#FFFFFF";
-        mainButton.color = "#6366f1"; // Индиго под цвет дизайна
+        mainButton.color = "#6366f1"; 
 
         function addToCart(name, price) {
             cart.items.push(name);
             cart.total_price += price;
             mainButton.setText(`Оформить заказ (${cart.total_price} ₽)`);
-            if (!mainButton.isVisible) mainButton.show();
-        }
-
-        mainButton.onClick(function() {
-            tg.sendData(JSON.stringify(cart));
-        });
-    </script>
-</body>
-</html>
