@@ -108,9 +108,8 @@
     <div class="bottom-sheet-overlay" id="sheet-overlay" onclick="closePaymentSheet()"></div>
     <div class="bottom-sheet" id="payment-sheet">
         <h3 style="font-size: 16px; text-align: center; margin-bottom: 20px;">Выберите способ оплаты</h3>
-        <div class="pay-option" onclick="selectPayment('Банковская карта')">💳 Банковская карта</div>
-        <div class="pay-option" onclick="selectPayment('СБП')">📲 СБП (Моментально)</div>
-        <div class="pay-option" onclick="selectPayment('Криптовалюта')">🪙 Криптовалюта</div>
+        <div class="pay-option" onclick="selectPayment('Банковская карта')">💳 Тестовая карта (Stars)</div>
+        <div class="pay-option" onclick="selectPayment('СБП')">📲 Моментальный баланс</div>
     </div>
 
     <script>
@@ -128,7 +127,6 @@
             document.getElementById('screen-shop').classList.remove('active');
             document.getElementById('screen-profile').classList.remove('active');
             document.getElementById('screen-admin').classList.remove('active');
-            
             document.getElementById('btn-shop').classList.remove('active');
             document.getElementById('btn-profile').classList.remove('active');
             document.getElementById('btn-admin').classList.remove('active');
@@ -149,22 +147,26 @@
             document.getElementById('sheet-overlay').style.display = 'none';
         }
 
-        // Автономный метод генерации Deep Link
         function selectPayment(method) {
-            closePaymentSheet();
-            
-            const itemClean = currentOrder.name.replace(/\s+/g, '_');
-            const methodClean = method.replace(/\s+/g, '_');
-            const payload = `${itemClean}__${currentOrder.price}__${methodClean}`;
-            
-            // ВШИТЫЙ ЮЗЕРНЕЙМ ВАШЕГО БОТА:
-            const botUsername = "my_premium_shop_2026_bot"; 
-            
-            const deepLink = `https://t.me{botUsername}?start=${payload}`;
-            
-            // Открываем чат и закрываем маркетплейс
-            tg.openTelegramLink(deepLink);
-            tg.close();
+            try {
+                closePaymentSheet();
+                
+                const nameStr = String(currentOrder.name).replace(/\s+/g, '_');
+                const priceStr = String(currentOrder.price);
+                const methodStr = String(method).replace(/\s+/g, '_');
+
+                // Формируем безопасный Deep Link-триггер для выставления счета
+                const payload = `${nameStr}__${priceStr}__${methodStr}`;
+                const botUsername = "my_premium_shop_2026_bot"; 
+                
+                const deepLink = `https://t.me{botUsername}?start=${payload}`;
+                
+                // Перенаправляем пользователя в чат, где бот тут же выдаст платежную карточку
+                tg.openTelegramLink(deepLink);
+                tg.close();
+            } catch (error) {
+                alert("Ошибка JS: " + error.message);
+            }
         }
     </script>
 </body>
