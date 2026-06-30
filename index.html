@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Enterprise Marketplace</title>
-    <!-- Официальный и актуальный SDK Telegram Mini Apps -->
+    <!-- Официальный SDK Telegram Mini Apps -->
     <script src="https://telegram.org"></script>
     <style>
         :root {
@@ -121,6 +121,7 @@
         }
         
         let currentOrder = { name: "", price: 0 };
+        let finalLink = "";
 
         function changeScreen(screenId) {
             document.getElementById('screen-shop').classList.remove('active');
@@ -139,6 +140,7 @@
             currentOrder.price = price;
             document.getElementById('sheet-overlay').style.display = 'block';
             document.getElementById('payment-sheet').style.display = 'block';
+            tg.MainButton.hide(); // Спрятать главную кнопку, если она была открыта
         }
 
         function closePaymentSheet() {
@@ -146,26 +148,33 @@
             document.getElementById('sheet-overlay').style.display = 'none';
         }
 
-        // БЕЗОТКАЗНЫЙ МЕТОД: Генерация глубокой ссылки и её открытие через нативный браузер
         function selectPayment(method) {
-            try {
-                closePaymentSheet();
-                
-                const itemCode = String(currentOrder.name);
-                const priceValue = String(currentOrder.price);
-                const methodCode = String(method);
+            closePaymentSheet();
+            
+            const itemCode = String(currentOrder.name);
+            const priceValue = String(currentOrder.price);
+            const methodCode = String(method);
 
-                // Создаем короткий хэш заказа, разрешенный Telegram
-                const payload = `${itemCode}_${priceValue}_${methodCode}`;
-                const botUsername = "my_premium_shop_2026_bot";
-                
-                // Нативный вызов внешней ссылки Telegram. Этот метод не блокируется CORS и политиками WebView.
-                tg.openLink(`https://t.me{botUsername}?start=${payload}`);
-                tg.close();
-            } catch (error) {
-                alert("Ошибка JS: " + error.message);
-            }
+            const payload = `${itemCode}_${priceValue}_${methodCode}`;
+            const botUsername = "my_premium_shop_2026_bot";
+            
+            // Сохраняем ссылку в переменную
+            finalLink = `https://t.me{botUsername}?start=${payload}`;
+            
+            // АКТИВИРУЕМ ОФИЦИАЛЬНУЮ ГЛАВНУЮ КНОПКУ TELEGRAM
+            tg.MainButton.text = "👉 ПОДТВЕРДИТЬ И ОПЛАТИТЬ";
+            tg.MainButton.textColor = "#ffffff";
+            tg.MainButton.color = "#6366f1";
+            tg.MainButton.show();
         }
+
+        // Ловим клик по официальной кнопке Telegram (телефон не имеет права его заблокировать)
+        tg.onEvent('mainButtonClicked', function() {
+            if(finalLink) {
+                tg.openTelegramLink(finalLink);
+                tg.close();
+            }
+        });
     </script>
 </body>
 </html>
