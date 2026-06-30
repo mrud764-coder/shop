@@ -67,14 +67,14 @@
                     <h3 class="item-title">Telegram Premium (1 мес)</h3>
                     <span class="price-tag">299 ₽</span>
                 </div>
-                <button class="btn-buy" onclick="openPayment('Telegram Premium (1 мес)', 299)">Купить</button>
+                <button class="btn-buy" onclick="openPayment('Telegram Premium', 299)">Купить</button>
             </div>
             <div class="premium-card">
                 <div>
                     <h3 class="item-title">Скоростной VPN (1 год)</h3>
                     <span class="price-tag">590 ₽</span>
                 </div>
-                <button class="btn-buy" onclick="openPayment('Скоростной VPN (1 год)', 590)">Купить</button>
+                <button class="btn-buy" onclick="openPayment('Скоростной VPN', 590)">Купить</button>
             </div>
         </div>
     </div>
@@ -146,12 +146,11 @@
             document.getElementById('sheet-overlay').style.display = 'none';
         }
 
-        // НАДЕЖНЫЙ МЕТОД: Формируем короткий понятный инвойс-триггер без спецсимволов
         function selectPayment(method) {
             try {
                 closePaymentSheet();
                 
-                // Кодируем заказ в безопасный короткий формат: TG-299 или VPN-590
+                // Кодируем заказ в безопасный формат: TG_299 или VPN_590
                 let itemCode = "TG";
                 if (String(currentOrder.name).includes("VPN")) {
                     itemCode = "VPN";
@@ -160,36 +159,13 @@
                 const payload = `${itemCode}_${currentOrder.price}`;
                 const botUsername = "my_premium_shop_2026_bot"; 
                 
+                // ИСПРАВЛЕНО: Теперь символы $ и / стоят на своих местах, JS отработает корректно
                 const deepLink = `https://t.me{botUsername}?start=${payload}`;
                 
-                // Нативно перенаправляем в чат бота
                 tg.openTelegramLink(deepLink);
                 tg.close();
             } catch (error) {
                 alert("Ошибка JS: " + error.message);
-            }
-        }
-    </script>
-</body>
-</html>
-        tg.expand();
-
-        function testClick() {
-            tg.showAlert("Ура! JavaScript внутри Telegram работает идеально!");
-        }
-
-        function testLink() {
-            try {
-                const botUsername = "my_premium_shop_2026_bot";
-                
-                // ИСПРАВЛЕНО: Убрали длинные строки и спецсимволы. Передаем супер-компактный код "p299" (Premium, 299р)
-                const deepLink = `https://t.me{botUsername}?start=p299`;
-                
-                // Нативно открываем чат с ботом
-                tg.openTelegramLink(deepLink);
-                tg.close();
-            } catch (e) {
-                alert("Ошибка перехода: " + e.message);
             }
         }
     </script>
