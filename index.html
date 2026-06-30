@@ -10,9 +10,11 @@
             --bg-gradient: radial-gradient(circle at 50% 0%, #1a1c29 0%, #0b0c10 100%);
             --glass-bg: rgba(26, 29, 41, 0.65);
             --glass-border: rgba(255, 255, 255, 0.06);
+            --accent: #6366f1;
             --accent-glow: drop-shadow(0 0 12px rgba(99, 102, 241, 0.5));
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
+            --success: #10b981;
         }
 
         body { 
@@ -22,167 +24,84 @@
             padding: 20px 16px 140px 16px;
             margin: 0;
             user-select: none;
+            overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Премиум Баннер Профиля */
+        /* VIP Профиль */
         .premium-profile {
             background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(168, 85, 247, 0.05) 100%);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            padding: 20px;
-            border-radius: 24px;
-            margin-bottom: 28px;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            padding: 20px; border-radius: 24px; margin-bottom: 24px;
             border: 1px solid rgba(99, 102, 241, 0.25);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: flex; align-items: center; justify-content: space-between;
         }
         .profile-meta { display: flex; align-items: center; gap: 14px; }
         .avatar-glow {
-            width: 46px;
-            height: 46px;
-            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+            width: 46px; height: 46px; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            border-radius: 16px; display: flex; align-items: center; justify-content: center;
+            font-size: 22px; box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
         }
-        .welcome-text { font-size: 16px; font-weight: 700; margin: 0; letter-spacing: -0.3px; }
-        .status-badge { 
-            font-size: 11px; 
-            color: #10b981; 
-            margin-top: 4px; 
-            display: flex; 
-            align-items: center; 
-            gap: 5px; 
-            font-weight: 600;
-        }
-        .pulse-dot { 
-            width: 6px; 
-            height: 6px; 
-            background: #10b981; 
-            border-radius: 50%; 
-            animation: pulse 2s infinite;
-        }
-        .balance-pill {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 6px 12px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            text-align: right;
-        }
+        .welcome-text { font-size: 16px; font-weight: 700; margin: 0; }
+        .status-badge { font-size: 11px; color: var(--success); margin-top: 4px; display: flex; align-items: center; gap: 5px; font-weight: 600; }
+        .pulse-dot { width: 6px; height: 6px; background: var(--success); border-radius: 50%; animation: pulse 2s infinite; }
+        .balance-pill { background: rgba(255, 255, 255, 0.05); padding: 6px 12px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08); }
         .balance-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
         .balance-value { font-size: 13px; font-weight: 700; color: #facc15; margin-top: 2px; }
 
-        /* Переключатель категорий (Табы) */
-        .tabs-container {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
+        /* Фильтрация по Табам */
+        .tabs-container { display: flex; gap: 8px; margin-bottom: 24px; overflow-x: auto; scrollbar-width: none; }
+        .tabs-container::-webkit-scrollbar { display: none; }
         .tab-item {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            padding: 10px 18px;
-            border-radius: 14px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-muted);
-            white-space: nowrap;
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            padding: 10px 18px; border-radius: 14px; font-size: 13px; font-weight: 600;
+            color: var(--text-muted); cursor: pointer; transition: all 0.2s ease;
         }
-        .tab-item.active {
-            background: #6366f1;
-            color: white;
-            border-color: #6366f1;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
-        }
+        .tab-item.active { background: var(--accent); color: white; border-color: var(--accent); box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35); }
 
-        /* Сетка премиум карточек */
-        .cards-feed { display: flex; flex-direction: column; gap: 16px; }
-        
+        /* Карточки товаров */
+        .cards-feed { display: flex; flex-direction: column; gap: 14px; }
         .premium-card { 
-            background: var(--glass-bg);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            padding: 20px; 
-            border-radius: 26px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            border: 1px solid var(--glass-border); 
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
+            background: var(--glass-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            padding: 18px; border-radius: 24px; display: flex; justify-content: space-between;
+            align-items: center; border: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
         }
-        .premium-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.02), transparent);
-            transform: translateX(-100%);
-            transition: 0.5s;
-        }
-        .premium-card:active::before { transform: translateX(100%); }
-        .premium-card:active { transform: scale(0.98); border-color: rgba(99, 102, 241, 0.4); }
-        
-        .meta-layer { display: flex; align-items: center; gap: 16px; }
-        .neon-icon {
-            font-size: 28px;
-            background: linear-gradient(135deg, #1e2235 0%, #141622 100%);
-            width: 56px;
-            height: 56px;
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .item-title { font-size: 16px; font-weight: 700; margin: 0; letter-spacing: -0.2px; }
-        .stock-tag { 
-            color: #10b981; 
-            font-size: 11px; 
-            font-weight: 600; 
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            margin-top: 4px;
-        }
-        .tag-dot { width: 4px; height: 4px; background: #10b981; border-radius: 50%; }
-        .price-tag { color: #ffffff; font-weight: 800; font-size: 18px; display: block; margin-top: 8px; }
-        
-        /* Кнопка "Купить" нового поколения */
-        .action-button { 
-            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-            color: white; 
-            border: none; 
-            font-size: 13px; 
-            font-weight: 700; 
-            padding: 12px 24px; 
-            border-radius: 16px; 
-            cursor: pointer;
-            filter: var(--accent-glow);
-            transition: all 0.2s ease;
-        }
-        .action-button:active { transform: scale(0.92); filter: none; }
+        .premium-card.hidden { display: none; }
+        .meta-layer { display: flex; align-items: center; gap: 14px; }
+        .neon-icon { font-size: 24px; background: #141622; width: 48px; height: 48px; border-radius: 16px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .item-title { font-size: 15px; font-weight: 700; margin: 0; }
+        .stock-tag { color: var(--success); font-size: 11px; font-weight: 600; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+        .tag-dot { width: 4px; height: 4px; background: var(--success); border-radius: 50%; }
+        .price-tag { color: #ffffff; font-weight: 800; font-size: 16px; display: block; margin-top: 6px; }
 
-        @keyframes pulse {
-            0% { transform: scale(0.95); opacity: 0.5; }
-            50% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 8px #10b981; }
-            100% { transform: scale(0.95); opacity: 0.5; }
-        }
+        /* Анимированный Счётчик количества */
+        .control-wrapper { display: flex; align-items: center; }
+        .btn-buy { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; border: none; font-size: 12px; font-weight: 700; padding: 10px 20px; border-radius: 14px; cursor: pointer; filter: var(--accent-glow); transition: all 0.2s ease; }
+        .btn-buy:active { transform: scale(0.93); }
+        
+        .counter-container { display: none; align-items: center; background: rgba(255,255,255,0.05); border-radius: 14px; border: 1px solid var(--glass-border); padding: 4px; gap: 12px; }
+        .btn-count { width: 32px; height: 32px; background: var(--accent); color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+        .count-value { font-size: 14px; font-weight: 700; min-width: 14px; text-align: center; }
+
+        /* Скользящее снизу окно (Bottom Sheet) */
+        .bottom-sheet-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); z-index: 999; }
+        .bottom-sheet { position: fixed; bottom: 0; left: 0; width: 100%; background: #131520; border-radius: 30px 30px 0 0; border-top: 1px solid rgba(255,255,255,0.1); padding: 24px 20px 40px 20px; box-sizing: border-box; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; }
+        .bottom-sheet.open { transform: translateY(0); }
+        .sheet-bar { width: 40px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin: 0 auto 20px auto; }
+        .sheet-title { font-size: 18px; font-weight: 800; margin-bottom: 16px; text-align: center; }
+        
+        .pay-option { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 16px; border-radius: 18px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: all 0.2s; }
+        .pay-option:active { background: rgba(99, 102, 241, 0.1); border-color: var(--accent); }
+        .pay-icon { font-size: 22px; }
+        .pay-text { font-size: 14px; font-weight: 600; }
+
+        @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <!-- Премиальный блок клиента -->
+    <!-- Профиль клиента -->
     <div class="premium-profile">
         <div class="profile-meta">
             <div class="avatar-glow">👑</div>
@@ -197,16 +116,16 @@
         </div>
     </div>
 
-    <!-- Горизонтальные Категории -->
+    <!-- Вкладки фильтрации (Табы) -->
     <div class="tabs-container">
-        <div class="tab-item active">🔥 Популярное</div>
-        <div class="tab-item">🛡️ VPN Сервисы</div>
-        <div class="tab-item">🤖 ИИ Аккаунты</div>
+        <div class="tab-item active" onclick="switchTab('all', this)">🔥 Все</div>
+        <div class="tab-item" onclick="switchTab('vpn', this)">🛡️ VPN Сервисы</div>
+        <div class="tab-item" onclick="switchTab('ai', this)">🤖 ИИ Аккаунты</div>
     </div>
 
+    <!-- Список товаров -->
     <div class="cards-feed">
-        <!-- Товар 1 -->
-        <div class="premium-card">
+        <div class="premium-card" data-category="vpn">
             <div class="meta-layer">
                 <div class="neon-icon">⭐</div>
                 <div>
@@ -215,53 +134,34 @@
                     <span class="price-tag">299 ₽</span>
                 </div>
             </div>
-            <button onclick="addToCart('Telegram Premium 1 мес', 299)" class="action-button">Купить</button>
+            <div class="control-wrapper">
+                <button class="btn-buy" id="buy-tg" onclick="activateCounter('tg', 'Telegram Premium 1 мес', 299)">Купить</button>
+                <div class="counter-container" id="count-tg">
+                    <button class="btn-count" onclick="updateCount('tg', -1, 'Telegram Premium 1 мес', 299)">-</button>
+                    <span class="count-value" id="val-tg">1</span>
+                    <button class="btn-count" onclick="updateCount('tg', 1, 'Telegram Premium 1 мес', 299)">+</button>
+                </div>
+            </div>
         </div>
 
-        <!-- Товар 2 -->
-        <div class="premium-card">
+        <div class="premium-card" data-category="vpn">
             <div class="meta-layer">
                 <div class="neon-icon">⚡</div>
                 <div>
-                    <h3 class="item-title">Высокоскоростной VPN (1 год)</h3>
+                    <h3 class="item-title">Скоростной VPN (1 год)</h3>
                     <span class="stock-tag"><span class="tag-dot"></span> Автовыдача</span>
                     <span class="price-tag">590 ₽</span>
                 </div>
             </div>
-            <button onclick="addToCart('Скоростной VPN 1 год', 590)" class="action-button">Купить</button>
-        </div>
-        
-        <!-- Товар 3 -->
-        <div class="premium-card">
-            <div class="meta-layer">
-                <div class="neon-icon">🧠</div>
-                <div>
-                    <h3 class="item-title">ChatGPT Plus (Аккаунт)</h3>
-                    <span class="stock-tag"><span class="tag-dot"></span> 3 шт. в наличии</span>
-                    <span class="price-tag">1 490 ₽</span>
+            <div class="control-wrapper">
+                <button class="btn-buy" id="buy-vpn" onclick="activateCounter('vpn', 'Скоростной VPN 1 год', 590)">Купить</button>
+                <div class="counter-container" id="count-vpn">
+                    <button class="btn-count" onclick="updateCount('vpn', -1, 'Скоростной VPN 1 год', 590)">-</button>
+                    <span class="count-value" id="val-vpn">1</span>
+                    <button class="btn-count" onclick="updateCount('vpn', 1, 'Скоростной VPN 1 год', 590)">+</button>
                 </div>
             </div>
-            <button onclick="addToCart('ChatGPT Plus Аккаунт', 1490)" class="action-button">Купить</button>
         </div>
-    </div>
-
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
         
-        // Интеграция с данными Telegram
-        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            document.getElementById('user-display').innerText = tg.initDataUnsafe.user.first_name;
-        }
-        
-        let cart = { items: [], total_price: 0 };
-        const mainButton = tg.MainButton;
-        
-        mainButton.setText("Оформить заказ (0 ₽)");
-        mainButton.textColor = "#FFFFFF";
-        mainButton.color = "#6366f1"; 
-
-        function addToCart(name, price) {
-            cart.items.push(name);
-            cart.total_price += price;
-            mainButton.setText(`Оформить заказ (${cart.total_price} ₽)`);
+        <div class="premium-card" data-category="ai">
+            <div class="meta-layer">
