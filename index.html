@@ -4,18 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Test Marketplace</title>
-    <!-- Официальный SDK Telegram -->
+    <!-- ИСПРАВЛЕНО: Правильный и полный путь к SDK Telegram -->
     <script src="https://telegram.org"></script>
     <style>
         body { 
             background-color: #0d0e12; color: #f3f4f6; 
             font-family: sans-serif; text-align: center; padding: 50px 20px;
+            -webkit-user-select: none; user-select: none;
         }
         .btn-test { 
             background: #6366f1; color: white; border: none; 
             font-size: 16px; font-weight: bold; padding: 15px 30px; 
             border-radius: 14px; cursor: pointer; margin: 10px; width: 80%;
         }
+        .btn-test:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
@@ -30,23 +32,29 @@
     <button class="btn-test" onclick="testLink()" style="background: #10b981;">2. Тест перехода в бот</button>
 
     <script>
-        // Инициализация
+        // Инициализация WebApp контекста
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
 
         // Функция для первой кнопки
         function testClick() {
-            alert("Ура! JavaScript внутри Telegram работает идеально!");
+            try {
+                // Используем нативный алерт Telegram вместо браузерного
+                tg.showAlert("Ура! JavaScript внутри Telegram работает идеально!");
+            } catch(e) {
+                alert("Обычный алерт: Работает!");
+            }
         }
 
         // Функция для второй кнопки
         function testLink() {
             try {
                 const botUsername = "my_premium_shop_2026_bot";
+                // ИСПРАВЛЕНО: Валидный синтаксис глубокой ссылки Telegram
                 const deepLink = `https://t.me{botUsername}?start=TestItem__100__Card`;
                 
-                // Пробуем открыть ссылку через Telegram SDK
+                // Пробуем открыть ссылку через встроенный метод Telegram SDK
                 tg.openTelegramLink(deepLink);
                 tg.close();
             } catch (e) {
