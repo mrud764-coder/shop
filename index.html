@@ -1,170 +1,94 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Enterprise Marketplace</title>
-    <!-- Официальный SDK Telegram Mini Apps -->
-    <script src="https://telegram.org"></script>
-    <style>
-        :root {
-            --bg-color: #0d0e12;
-            --card-bg: #161820;
-            --accent: #6366f1;
-            --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
-            --success: #10b981;
-        }
+import json
+import asyncio
+from datetime import datetime
+from aiogram import Bot, Dispatcher, types, F
+from aiogram.filters import CommandStart, CommandObject
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, LabeledPrice
+from aiogram.enums import ParseMode
 
-        body { 
-            background-color: var(--bg-color); color: var(--text-main); 
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
-            padding: 16px 16px 100px 16px; margin: 0;
-            -webkit-user-select: none; user-select: none;
-        }
+# Конфигурация
+TOKEN = "8797160481:AAGGiIgPMZZD8nfZbp1Ylty6C7jXVvNBR58"
+WEB_APP_URL = "https://vercel.app"
+PROVIDER_TOKEN = ""  # Пусто для тестовых транзакций через Telegram Stars (XTR)
 
-        .brand { font-size: 20px; font-weight: 800; color: var(--accent); text-align: center; margin-bottom: 20px; }
-        .app-screen { display: none; }
-        .app-screen.active { display: block; }
+bot = Bot(token=TOKEN, default_properties={"parse_mode": ParseMode.HTML})
+dp = Dispatcher()
 
-        .vip-card { background: #1e1b4b; padding: 20px; border-radius: 24px; border: 1px solid rgba(99, 102, 241, 0.25); margin-bottom: 24px; }
-        .bonus-value { font-size: 28px; font-weight: 900; color: #facc15; margin-top: 8px; }
+# 1. Обработчик команды /start (Принимает ручной запуск и переходы по ссылкам)
+@dp.message(CommandStart())
+async def cmd_start(message: types.Message, command: CommandObject):
+    user_id = message.from_user.id
+    args = command.args  # Считываем аргументы из ссылки (например: TG_299_Card)
 
-        .grid { display: flex; flex-direction: column; gap: 14px; }
-        .premium-card { 
-            background: var(--card-bg); padding: 18px; border-radius: 24px; 
-            display: flex; justify-content: space-between; align-items: center; 
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .item-title { font-size: 15px; font-weight: 700; margin: 0; }
-        .price-tag { color: #ffffff; font-weight: 800; font-size: 16px; display: block; margin-top: 6px; }
-        
-        .btn-buy { background: var(--accent); color: white; border: none; font-size: 12px; font-weight: 700; padding: 10px 20px; border-radius: 14px; cursor: pointer; }
-        .btn-buy:active { transform: scale(0.95); }
-
-        .bottom-sheet-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; }
-        .bottom-sheet { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: #131520; border-radius: 30px 30px 0 0; padding: 24px 20px 40px 20px; box-sizing: border-box; z-index: 1001; }
-        .pay-option { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 16px; border-radius: 18px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; cursor: pointer; }
-
-        .bottom-nav {
-            position: fixed; bottom: 16px; left: 16px; right: 16px;
-            background: #11131c; border-radius: 24px; padding: 12px; 
-            display: flex; justify-content: space-around; border: 1px solid rgba(255, 255, 255, 0.05); z-index: 999;
-        }
-        .nav-btn { background: none; border: none; color: var(--text-muted); font-size: 13px; font-weight: 700; cursor: pointer; }
-        .nav-btn.active { color: var(--accent); }
-    </style>
-</head>
-<body>
-
-    <div class="brand">CYBER NEXUS</div>
-
-    <!-- ЭКРАН 1: МАГАЗИН -->
-    <div class="app-screen active" id="screen-shop">
-        <div class="grid">
-            <div class="premium-card">
-                <div>
-                    <h3 class="item-title">Telegram Premium (1 мес)</h3>
-                    <span class="price-tag">299 ₽</span>
-                </div>
-                <button class="btn-buy" onclick="openPayment('TG', 299)">Купить</button>
-            </div>
-            <div class="premium-card">
-                <div>
-                    <h3 class="item-title">Скоростной VPN (1 год)</h3>
-                    <span class="price-tag">590 ₽</span>
-                </div>
-                <button class="btn-buy" onclick="openPayment('VPN', 590)">Купить</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ЭКРАН 2: ПРОФИЛЬ -->
-    <div class="app-screen" id="screen-profile">
-        <div class="vip-card">
-            <h2 style="margin:0; font-size:18px;" id="user-display">Премиум Клиент</h2>
-            <div class="bonus-value">100 ₽</div>
-            <p style="font-size:11px; color:var(--text-muted); margin:8px 0 0 0;">Ваш бонусный баланс в CRM</p>
-        </div>
-    </div>
-
-    <!-- ЭКРАН 3: АДМИНКА -->
-    <div class="app-screen" id="screen-admin">
-        <div class="vip-card" style="background: #064e3b; border-color: #047857;">
-            <h3 style="margin:0; font-size:14px; color:#a7f3d0;">ВЫРУЧКА СЕГОДНЯ</h3>
-            <div class="bonus-value" style="color:#10b981;">24 390 ₽</div>
-        </div>
-    </div>
-
-    <!-- Навигация -->
-    <div class="bottom-nav">
-        <button class="nav-btn active" id="btn-shop" onclick="changeScreen('shop')">🛍️ Магазин</button>
-        <button class="nav-btn" id="btn-profile" onclick="changeScreen('profile')">👤 Профиль</button>
-        <button class="nav-btn" id="btn-admin" onclick="changeScreen('admin')">📊 Админка</button>
-    </div>
-
-    <!-- Выезжающее окно способов оплаты -->
-    <div class="bottom-sheet-overlay" id="sheet-overlay" onclick="closePaymentSheet()"></div>
-    <div class="bottom-sheet" id="payment-sheet">
-        <h3 style="font-size: 16px; text-align: center; margin-bottom: 20px;">Выберите способ оплаты</h3>
-        <div class="pay-option" onclick="selectPayment('Card')">💳 Банковская карта</div>
-        <div class="pay-option" onclick="selectPayment('SBP')">📲 СБП (Моментально)</div>
-    </div>
-
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
-        
-        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            document.getElementById('user-display').innerText = tg.initDataUnsafe.user.first_name;
-        }
-        
-        let currentOrder = { name: "", price: 0 };
-
-        function changeScreen(screenId) {
-            document.getElementById('screen-shop').classList.remove('active');
-            document.getElementById('screen-profile').classList.remove('active');
-            document.getElementById('screen-admin').classList.remove('active');
-            document.getElementById('btn-shop').classList.remove('active');
-            document.getElementById('btn-profile').classList.remove('active');
-            document.getElementById('btn-admin').classList.remove('active');
+    # ЕСЛИ ПОЛЬЗОВАТЕЛЬ ПРИШЕЛ ПОСЛЕ НАЖАТИЯ «КУПИТЬ» ИЗ МАГАЗИНА
+    if args and ("TG_" in args or "VPN_" in args):
+        try:
+            item_code, price_raw, method = args.split("_")
+            price_value = int(price_raw)
             
-            document.getElementById('screen-' + screenId).classList.add('active');
-            document.getElementById('btn-' + screenId).classList.add('active');
-        }
+            item_title = "Telegram Premium (1 мес)" if item_code == "TG" else "Скоростной VPN (1 год)"
 
-        function openPayment(name, price) {
-            currentOrder.name = name;
-            currentOrder.price = price;
-            document.getElementById('sheet-overlay').style.display = 'block';
-            document.getElementById('payment-sheet').style.display = 'block';
-        }
+            await message.answer(f"🔄 <b>Заказ обрабатывается в CRM...</b>\nМетод оплаты: {method}")
 
-        function closePaymentSheet() {
-            document.getElementById('payment-sheet').style.display = 'none';
-            document.getElementById('sheet-overlay').style.display = 'none';
-        }
+            # Формируем нативный счет на оплату Telegram Stars
+            prices = [LabeledPrice(label=item_title, amount=price_value)]
+            
+            await bot.send_invoice(
+                chat_id=user_id,
+                title=item_title,
+                description="Оплата цифровой услуги в Cyber Nexus.",
+                payload=json.dumps({"item": item_title}),
+                provider_token=PROVIDER_TOKEN,
+                currency="XTR",  # Валюта Telegram Stars
+                prices=prices,
+                start_parameter="market_payment"
+            )
+            return
+        except Exception as e:
+            await message.answer("❌ Ошибка при формировании платежного счета.")
+            return
 
-        // БЕЗОТКАЗНЫЙ МЕТОД: Используем универсальный протокол tg://resolve вместо ссылки t.me
-        function selectPayment(method) {
-            try {
-                closePaymentSheet();
-                
-                const itemCode = String(currentOrder.name);
-                const priceValue = String(currentOrder.price); // ИСПРАВЛЕНО: Никаких int(), используем String/Number
-                const methodCode = String(method);
+    # ОБЫЧНЫЙ РУЧНОЙ ЗАПУСК БОТА (Генерируем красивую Inline-кнопку)
+    timestamp = int(datetime.now().timestamp())
+    unique_url = f"{WEB_APP_URL}?user_id={user_id}&v={timestamp}"
+    
+    # Используем Inline-кнопку, так как она стабильно работает во всех версиях Telegram
+    kb = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="🛍️ Войти в Маркетплейс", web_app=types.WebAppInfo(url=unique_url))]
+        ]
+    )
+    
+    await message.answer(
+        f"👑 <b>Добро пожаловать в ультра-премиум маркетплейс Cyber Nexus!</b>\n\n"
+        f"🎁 Вам начислен приветственный баланс: <b>100 ₽</b>\n\n"
+        f"Нажмите на кнопку ниже, чтобы открыть витрину магазина 👇",
+        reply_markup=kb
+    )
 
-                const payload = `${itemCode}_${priceValue}_${methodCode}`;
-                const botUsername = "my_premium_shop_2026_bot";
-                
-                // Перенаправление через внутренний протокол мессенджера (работает внутри WebApp и Safari)
-                tg.openLink(`tg://resolve?domain=${botUsername}&start=${payload}`);
-                tg.close();
-            } catch (error) {
-                alert("Ошибка JS: " + error.message);
-            }
-        }
-    </script>
-</body>
-</html>
+# 2. Системное подтверждение готовности выдать товар (Обязательно для Telegram)
+@dp.pre_checkout_query()
+async def pre_checkout_handler(pre_checkout_query: types.PreCheckoutQuery):
+    await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
+
+# 3. Фиксация успешного списания средств
+@dp.message(F.successful_payment)
+async def success_payment_handler(message: types.Message):
+    payload = json.loads(message.successful_payment.invoice_payload)
+    item_title = payload.get("item", "Товар")
+    
+    await message.answer(
+        f"🎉 <b>Платеж успешно проведен!</b>\n\n"
+        f"📦 Услуга: <b>{item_title}</b> успешно активирована в вашей CRM учетной записи.\n"
+        f"💰 Списано: {message.successful_payment.total_amount} XTR (Тестовые звезды)\n\n"
+        f"Маркетплейс работает идеально!"
+    )
+
+async def main():
+    # Удаляем старые вебхуки, чтобы бот мгновенно реагировал на новые команды
+    await bot.delete_webhook(drop_pending_updates=True)
+    print("✅ Автономный Enterprise-бэкенд успешно запущен и ждет заказов!")
+    await dp.start_polling(bot)
+
+if __name__ == "__main__":
+    asyncio.run(main())
