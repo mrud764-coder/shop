@@ -24,13 +24,18 @@
             user-select: none;
         }
 
+        /* Шапка */
         .brand { font-size: 20px; font-weight: 800; color: var(--accent); text-align: center; margin-bottom: 20px; }
+        
+        /* Логика экранов */
         .app-screen { display: none; }
         .app-screen.active { display: block; }
 
+        /* Профиль */
         .vip-card { background: #1e1b4b; padding: 20px; border-radius: 24px; border: 1px solid rgba(99, 102, 241, 0.25); margin-bottom: 24px; }
         .bonus-value { font-size: 28px; font-weight: 900; color: #facc15; margin-top: 8px; }
 
+        /* Карточки товаров */
         .grid { display: flex; flex-direction: column; gap: 14px; }
         .premium-card { 
             background: var(--card-bg); padding: 18px; border-radius: 24px; 
@@ -40,13 +45,16 @@
         .item-title { font-size: 15px; font-weight: 700; margin: 0; }
         .price-tag { color: #ffffff; font-weight: 800; font-size: 16px; display: block; margin-top: 6px; }
         
+        /* Кнопка купить */
         .btn-buy { background: var(--accent); color: white; border: none; font-size: 12px; font-weight: 700; padding: 10px 20px; border-radius: 14px; cursor: pointer; }
         .btn-buy:active { transform: scale(0.95); }
 
+        /* Окно Оплаты */
         .bottom-sheet-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; }
         .bottom-sheet { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: #131520; border-radius: 30px 30px 0 0; padding: 24px 20px 40px 20px; box-sizing: border-box; z-index: 1001; }
         .pay-option { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 16px; border-radius: 18px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; cursor: pointer; }
 
+        /* Нижнее Меню */
         .bottom-nav {
             position: fixed; bottom: 16px; left: 16px; right: 16px;
             background: #11131c; border-radius: 24px; padding: 12px; 
@@ -104,12 +112,13 @@
         <button class="nav-btn" id="btn-admin" onclick="changeScreen('admin')">📊 Админка</button>
     </div>
 
-    <!-- Окно способов оплаты -->
+    <!-- Выезжающее окно способов оплаты -->
     <div class="bottom-sheet-overlay" id="sheet-overlay" onclick="closePaymentSheet()"></div>
     <div class="bottom-sheet" id="payment-sheet">
         <h3 style="font-size: 16px; text-align: center; margin-bottom: 20px;">Выберите способ оплаты</h3>
-        <div class="pay-option" onclick="selectPayment('Банковская карта')">💳 Нативная оплата (Карта)</div>
-        <div class="pay-option" onclick="selectPayment('СБП')">📲 Быстрая оплата Telegram</div>
+        <div class="pay-option" onclick="selectPayment('Банковская карта')">💳 Банковская карта</div>
+        <div class="pay-option" onclick="selectPayment('СБП')">📲 СБП (Моментально)</div>
+        <div class="pay-option" onclick="selectPayment('Криптовалюта')">🪙 Криптовалюта</div>
     </div>
 
     <script>
@@ -121,12 +130,13 @@
             document.getElementById('user-display').innerText = tg.initDataUnsafe.user.first_name;
         }
         
-        let currentOrder = { name: "", price: 0 };
+        let currentOrder = { name: "", price: "" };
 
         function changeScreen(screenId) {
             document.getElementById('screen-shop').classList.remove('active');
             document.getElementById('screen-profile').classList.remove('active');
             document.getElementById('screen-admin').classList.remove('active');
+            
             document.getElementById('btn-shop').classList.remove('active');
             document.getElementById('btn-profile').classList.remove('active');
             document.getElementById('btn-admin').classList.remove('active');
@@ -147,47 +157,17 @@
             document.getElementById('sheet-overlay').style.display = 'none';
         }
 
-        // АКТУАЛЬНЫЙ МЕТОД: Генерация инвойса через бэкенд бота
+        // РАБОЧИЙ НАТИВНЫЙ МЕТОД: Отправка данных без использования fetch сетевых запросов
         function selectPayment(method) {
             closePaymentSheet();
+            let dataToSend = {
+                items: [currentOrder.name],
+                total_price: currentOrder.price,
+                payment_method: method
+            };
             
-            // Включаем нативный лоадер Telegram, чтобы пользователь видел процесс загрузки
-            tg.MainButton.setText("Оформление заказа...").show();
-            
-            // Шлем запрос на вебхук нашего бота (он работает асинхронно через порт aiogram)
-            // Мы используем относительный или прямой URL вашего бота
-            fetch('/api/create_invoice', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    init_data: tg.initData,
-                    title: currentOrder.name,
-                    price: currentOrder.price,
-                    method: method
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                tg.MainButton.hide();
-                if(data.invoice_link) {
-                    // Открываем нативную шторку оплаты внутри Telegram
-                    tg.openInvoice(data.invoice_link, function(status) {
-                        if (status === 'paid') {
-                            tg.showAlert("🎉 Оплата прошла успешно! Спасибо за покупку.");
-                            tg.close();
-                        } else if (status === 'failed') {
-                            tg.showAlert("❌ Ошибка при проведении транзакции.");
-                        }
-                    });
-                } else {
-                    alert("Ошибка сервера при создании ссылки на оплату.");
-                }
-            })
-            .catch(err => {
-                tg.MainButton.hide();
-                console.error(err);
-                alert("Не удалось связаться с сервером платежей.");
-            });
+            // Нативно отправляем JSON строку в чат через ядро Telegram
+            tg.sendData(JSON.stringify(dataToSend));
         }
     </script>
 </body>
