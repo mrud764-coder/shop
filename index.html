@@ -30,7 +30,7 @@
         .item-title { font-size: 15px; font-weight: 700; margin: 0; }
         .price-tag { color: #ffffff; font-weight: 800; font-size: 16px; display: block; margin-top: 6px; }
         
-        /* Кнопка купить теперь является прямой ссылкой */
+        /* Профессиональная кнопка-ссылка */
         .btn-link { 
             background: var(--accent); color: white; text-decoration: none;
             font-size: 13px; font-weight: 700; padding: 12px 24px; 
@@ -50,8 +50,8 @@
                 <h3 class="item-title">Telegram Premium (1 мес)</h3>
                 <span class="price-tag">299 ₽</span>
             </div>
-            <!-- Прямая HTML ссылка без JS -->
-            <a href="https://t.me" class="btn-link">Купить</a>
+            <!-- ИСПРАВЛЕНО: используем tg://resolve протокол и короткий разрешенный аргумент 'tg299' -->
+            <a href="tg://resolve?domain=my_premium_shop_2026_bot&start=tg299" class="btn-link">Купить</a>
         </div>
 
         <!-- ТОВАР 2 -->
@@ -60,8 +60,8 @@
                 <h3 class="item-title">Скоростной VPN (1 год)</h3>
                 <span class="price-tag">590 ₽</span>
             </div>
-            <!-- Прямая HTML ссылка без JS -->
-            <a href="https://t.me" class="btn-link">Купить</a>
+            <!-- ИСПРАВЛЕНО: прямой системный вызов приложения Telegram -->
+            <a href="tg://resolve?domain=my_premium_shop_2026_bot&start=vpn590" class="btn-link">Купить</a>
         </div>
     </div>
 
