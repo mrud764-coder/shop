@@ -149,21 +149,20 @@
             document.getElementById('sheet-overlay').style.display = 'none';
         }
 
-        // БЕЗОТКАЗНЫЙ МЕТОД: Формируем Deep Link и передаем параметры прямо в бота
+        // Автономный метод генерации Deep Link
         function selectPayment(method) {
             closePaymentSheet();
             
-            // Кодируем параметры заказа (убираем пробелы, меняя их на нижнее подчеркивание)
             const itemClean = currentOrder.name.replace(/\s+/g, '_');
             const methodClean = method.replace(/\s+/g, '_');
             const payload = `${itemClean}__${currentOrder.price}__${methodClean}`;
             
-            // ВНИМАНИЕ: Замените 'cyber_nexus_ee_bot' на ТОЧНЫЙ юзернейм вашего бота из BotFather (без знака @)
+            // ВШИТЫЙ ЮЗЕРНЕЙМ ВАШЕГО БОТА:
             const botUsername = "my_premium_shop_2026_bot"; 
             
             const deepLink = `https://t.me{botUsername}?start=${payload}`;
             
-            // Нативно открываем чат с переданными параметрами и мгновенно закрываем Mini App
+            // Открываем чат и закрываем маркетплейс
             tg.openTelegramLink(deepLink);
             tg.close();
         }
