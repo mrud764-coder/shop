@@ -3,180 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>⚡ Cyber Enterprise Marketplace</title>
+    <title>Enterprise Marketplace</title>
     <style>
         :root {
-            --bg-color: #08090c;
-            --card-bg: #11131c;
+            --bg-color: #0d0e12;
+            --card-bg: #161820;
             --accent: #6366f1;
-            --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
             --text-main: #f3f4f6;
-            --text-muted: #6b7280;
+            --text-muted: #9ca3af;
             --success: #10b981;
-            --warning: #facc15;
         }
 
         body { 
             background-color: var(--bg-color); color: var(--text-main); 
             font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
-            padding: 16px 16px 100px 16px; margin: 0; overflow-y: auto;
+            padding: 16px 16px 100px 16px; margin: 0;
         }
 
-        /* Верхняя панель навигации (Миллионный дизайн) */
-        .app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding: 4px; }
-        .brand { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        /* Шапка */
+        .brand { font-size: 20px; font-weight: 800; color: var(--accent); text-align: center; margin-bottom: 20px; }
         
-        /* Стили экранов (Вкладок) */
+        /* Логика экранов (Вкладок) */
         .app-screen { display: none; }
-        .app-screen.active { display: block; animation: fadeIn 0.3s ease; }
+        .app-screen.active { display: block; }
 
-        /* VIP Профиль Карточка */
-        .vip-card {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(168, 85, 247, 0.05) 100%);
-            padding: 24px; border-radius: 28px; border: 1px solid rgba(99, 102, 241, 0.25);
-            margin-bottom: 24px; position: relative; overflow: hidden;
-        }
-        .vip-title { font-size: 20px; font-weight: 800; margin: 0; }
-        .vip-subtitle { font-size: 11px; color: var(--success); text-transform: uppercase; font-weight: 700; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
-        .pulse-dot { width: 6px; height: 6px; background: var(--success); border-radius: 50%; animation: pulse 2s infinite; }
-        
-        .bonus-box { margin-top: 24px; }
-        .bonus-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
-        .bonus-value { font-size: 32px; font-weight: 900; color: var(--warning); margin-top: 4px; }
-
-        /* Табы / Категории в Магазине */
-        .tabs-container { display: flex; gap: 8px; margin-bottom: 20px; }
-        .tab-item {
-            background: var(--card-bg); border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 10px 18px; border-radius: 14px; font-size: 13px; font-weight: 600;
-            color: #9ca3af; cursor: pointer;
-        }
-        .tab-item.active { background: var(--accent); color: white; border-color: var(--accent); }
+        /* Профиль */
+        .vip-card { background: #1e1b4b; padding: 20px; border-radius: 24px; border: 1px solid rgba(99, 102, 241, 0.25); margin-bottom: 24px; }
+        .bonus-value { font-size: 28px; font-weight: 900; color: #facc15; margin-top: 8px; }
 
         /* Карточки товаров */
-        .cards-feed { display: flex; flex-direction: column; gap: 14px; }
+        .grid { display: flex; flex-direction: column; gap: 14px; }
         .premium-card { 
             background: var(--card-bg); padding: 18px; border-radius: 24px; 
             display: flex; justify-content: space-between; align-items: center; 
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        .premium-card.hidden { display: none; }
-        .meta-layer { display: flex; align-items: center; gap: 14px; }
-        .neon-icon { font-size: 24px; background: #181a26; width: 48px; height: 48px; border-radius: 16px; display: flex; align-items: center; justify-content: center; }
         .item-title { font-size: 15px; font-weight: 700; margin: 0; }
-        .stock-tag { color: var(--success); font-size: 11px; font-weight: 600; margin-top: 4px; }
         .price-tag { color: #ffffff; font-weight: 800; font-size: 16px; display: block; margin-top: 6px; }
+        
+        /* Кнопка купить */
         .btn-buy { background: var(--accent); color: white; border: none; font-size: 12px; font-weight: 700; padding: 10px 20px; border-radius: 14px; cursor: pointer; }
+        .btn-buy:active { transform: scale(0.95); }
 
-        /* Элементы Админки (CRM Аналитика) */
-        .stats-grid { display: grid; grid-cols: 2; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        .stat-card { background: var(--card-bg); padding: 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.03); }
-        .stat-num { font-size: 22px; font-weight: 800; color: var(--accent); margin-top: 4px; }
-        .crm-list { background: var(--card-bg); border-radius: 24px; padding: 16px; border: 1px solid rgba(255,255,255,0.03); }
-        .crm-item { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; font-size: 13px; }
-        .crm-item:last-child { border: none; }
+        /* Окно Оплаты */
+        .bottom-sheet-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; }
+        .bottom-sheet { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: #131520; border-radius: 30px 30px 0 0; padding: 24px 20px 40px 20px; box-sizing: border-box; z-index: 1001; }
+        .pay-option { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 16px; border-radius: 18px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; cursor: pointer; }
 
-        /* Нижнее Премиум Меню (Смена экранов) */
+        /* Нижнее Меню */
         .bottom-nav {
             position: fixed; bottom: 16px; left: 16px; right: 16px;
-            background: rgba(17, 19, 28, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-radius: 24px; padding: 8px 12px; display: flex; justify-content: space-around;
-            border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 999;
+            background: #11131c; border-radius: 24px; padding: 12px; 
+            display: flex; justify-content: space-around; border: 1px solid rgba(255, 255, 255, 0.05); z-index: 999;
         }
-        .nav-btn {
-            background: none; border: none; color: var(--text-muted);
-            font-size: 11px; font-weight: 700; display: flex; flex-direction: column;
-            align-items: center; gap: 4px; cursor: pointer; padding: 8px; transition: all 0.2s;
-        }
+        .nav-btn { background: none; border: none; color: var(--text-muted); font-size: 13px; font-weight: 700; cursor: pointer; }
         .nav-btn.active { color: var(--accent); }
-        .nav-icon { font-size: 20px; }
-
-        /* Окно оплаты */
-        .bottom-sheet-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; }
-        .bottom-sheet { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: #12131a; border-radius: 30px 30px 0 0; border-top: 1px solid rgba(255,255,255,0.08); padding: 24px 20px 40px 20px; box-sizing: border-box; z-index: 1001; }
-        .pay-option { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 16px; border-radius: 18px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; cursor: pointer; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
     </style>
 </head>
 <body>
 
+    <!-- Подключаем Telegram SDK -->
     <script src="https://telegram.org"></script>
 
-    <!-- Главная Шапка -->
-    <div class="app-header">
-        <div class="brand">CYBER NEXUS</div>
-        <div style="font-size: 12px; font-weight: bold; color: var(--text-muted);" id="screen-indicator">МАГАЗИН</div>
-    </div>
+    <div class="brand">CYBER NEXUS</div>
 
     <!-- ЭКРАН 1: МАГАЗИН -->
     <div class="app-screen active" id="screen-shop">
-        <div class="tabs-container">
-            <div class="tab-item active" onclick="switchCategory('all', this)">🔥 Все</div>
-            <div class="tab-item" onclick="switchCategory('vpn', this)">🛡️ VPN</div>
-            <div class="tab-item" onclick="switchCategory('ai', this)">🤖 ИИ</div>
-        </div>
-
-        <div class="cards-feed">
-            <div class="premium-card" data-category="vpn">
-                <div class="meta-layer">
-                    <div class="neon-icon">⭐</div>
-                    <div>
-                        <h3 class="item-title">Telegram Premium (1 мес)</h3>
-                        <span class="stock-tag">● Моментальная автовыдача</span>
-                        <span class="price-tag">299 ₽</span>
-                    </div>
+        <div class="grid">
+            <div class="premium-card">
+                <div>
+                    <h3 class="item-title">Telegram Premium (1 мес)</h3>
+                    <span class="price-tag">299 ₽</span>
                 </div>
                 <button class="btn-buy" onclick="openPayment('Telegram Premium 1 мес', 299)">Купить</button>
             </div>
-
-            <div class="premium-card" data-category="vpn">
-                <div class="meta-layer">
-                    <div class="neon-icon">⚡</div>
-                    <div>
-                        <h3 class="item-title">Скоростной VPN (1 год)</h3>
-                        <span class="stock-tag">● Моментальная автовыдача</span>
-                        <span class="price-tag">590 ₽</span>
-                    </div>
+            <div class="premium-card">
+                <div>
+                    <h3 class="item-title">Скоростной VPN (1 год)</h3>
+                    <span class="price-tag">590 ₽</span>
                 </div>
                 <button class="btn-buy" onclick="openPayment('Скоростной VPN 1 год', 590)">Купить</button>
             </div>
-            
-            <div class="premium-card" data-category="ai">
-                <div class="meta-layer">
-                    <div class="neon-icon">🤖</div>
-                    <div>
-                        <h3 class="item-title">ChatGPT Plus (Аккаунт)</h3>
-                        <span class="stock-tag">● В наличии 4 шт.</span>
-                        <span class="price-tag">1 490 ₽</span>
-                    </div>
-                </div>
-                <button class="btn-buy" onclick="openPayment('ChatGPT Plus Аккаунт', 1490)">Купить</button>
-            </div>
         </div>
     </div>
 
-    <!-- ЭКРАН 2: ЛИЧНЫЙ КАБИНЕТ -->
+    <!-- ЭКРАН 2: ПРОФИЛЬ -->
     <div class="app-screen" id="screen-profile">
         <div class="vip-card">
-            <h2 class="vip-title" id="user-display">Премиум Клиент</h2>
-            <p class="vip-subtitle"><span class="pulse-dot"></span> Дисконтная система Активна</p>
-            
-            <div class="bonus-box">
-                <div class="bonus-label">Доступный Бонусный Баланс</div>
-                <div class="bonus-value">100 ₽</div>
-            </div>
-        </div>
-        
-        <h3 style="font-size: 14px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px;">📦 История ваших заказов</h3>
-        <div class="crm-list" style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 13px;">
-            У вас пока нет совершенных заказов.<br>Ваша первая покупка сразу отобразится здесь в CRM!
+            <h2 style="margin:0; font-size:18px;" id="user-display">Премиум Клиент</h2>
+            <div class="bonus-value">100 ₽</div>
+            <p style="font-size:11px; color:var(--text-muted); margin:8px 0 0 0;">Ваш бонусный баланс в CRM</p>
         </div>
     </div>
 
-    <!-- ЭКРАН 3: CRM АДМИНКА -->
+    <!-- ЭКРАН 3: АДМИНКА -->
     <div class="app-screen" id="screen-admin">
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div style="font-size: 11px; color: var(--text-muted); font-weight: 700;">ВЫРУЧКА ЗА ДЕНЬ</div>
+        <div class="vip-card" style="background: #064e3b; border-color: #047857;">
+            <h3 style="margin:0; font-size:14px; color:#a7f3d0;">ВЫРУЧКА СЕГОДНЯ</h3>
+            <div class="bonus-value" style="color:#10b981;">24 390 ₽</div>
+        </div>
+    </div>
+
+    <!-- Навигация -->
+    <div class="bottom-nav">
+        <button class="nav-btn active" id="btn-shop" onclick="changeScreen('shop')">🛍️ Магазин</button>
+        <button class="nav-btn" id="btn-profile" onclick="changeScreen('profile')">👤 Профиль</button>
+        <button class="nav-btn" id="btn-admin" onclick="changeScreen('admin')">📊 Админка</button>
+    </div>
+
+    <!-- Выезжающее окно способов оплаты -->
+    <div class="bottom-sheet-overlay" id="sheet-overlay" onclick="closePaymentSheet()"></div>
+    <div class="bottom-sheet" id="payment-sheet">
+        <h3 style="font-size: 16px; text-align: center; margin-bottom: 20px;">Выберите способ оплаты</h3>
+        <div class="pay-option" onclick="selectPayment('Банковская карта')">💳 Банковская карта</div>
+        <div class="pay-option" onclick="selectPayment('СБП')">📲 СБП (Моментально)</div>
+        <div class="pay-option" onclick="selectPayment('Криптовалюта')">🪙 Криптовалюта</div>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+        
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            document.getElementById('user-display').innerText = tg.initDataUnsafe.user.first_name;
+        }
+        
+        let currentOrder = { name: "", price: "" };
+
+        /* Безотказное переключение экранов */
+        function changeScreen(screenId) {
+            // Прячем все экраны
+            document.getElementById('screen-shop').classList.remove('active');
+            document.getElementById('screen-profile').classList.remove('active');
+            document.getElementById('screen-admin').classList.remove('active');
+            
+            // Снимаем активность со всех кнопок меню
+            document.getElementById('btn-shop').classList.remove('active');
+            document.getElementById('btn-profile').classList.remove('active');
+            document.getElementById('btn-admin').classList.remove('active');
+            
+            // Включаем нужный экран и кнопку
+            document.getElementById('screen-' + screenId).classList.add('active');
+            document.getElementById('btn-' + screenId).classList.add('active');
+        }
+
+        function openPayment(name, price) {
+            currentOrder.name = name;
+            currentOrder.price = price;
+            document.getElementById('sheet-overlay').style.display = 'block';
+            document.getElementById('payment-sheet').style.display = 'block';
+        }
+
+        function closePaymentSheet() {
+            document.getElementById('payment-sheet').style.display = 'none';
+            document.getElementById('sheet-overlay').style.display = 'none';
+        }
+
+        function selectPayment(method) {
+            closePaymentSheet();
+            let dataToSend = {
+                items: [currentOrder.name],
+                total_price: currentOrder.price,
+                payment_method: method
+            };
+            tg.sendData(JSON.stringify(dataToSend));
+        }
+    </script>
+</body>
+</html>
